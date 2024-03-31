@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 
 import { OrderService } from './interfaces/order-service.interface';
 import { PlatformFactory } from '../platform/platform.factory';
@@ -11,7 +11,6 @@ export class OrderController {
   @Get('orders/:platform')
   @ApiParam({ name: 'platform', enum: ['shopify'] })
   async findAll(@Param('platform') platform: string) {
-    // implementation in src/shopify/order/orders.shopify.service.ts
     const orderService = this.platformFactory.getOrderService(
       platform,
     ) as OrderService;
@@ -29,6 +28,9 @@ export class OrderController {
     ) as OrderService;
 
     const order = await orderService.findOne(id);
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
 
     return orderService.transformResponseData(order);
   }

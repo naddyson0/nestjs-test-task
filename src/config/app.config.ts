@@ -1,6 +1,6 @@
 export default () => ({
   shopifyStore: process.env.SHOPIFY_STORE,
   shopifyApiKey: process.env.SHOPIFY_API_KEY,
-  shopifyApiPassword: process.env.SHOPIFY_API_PASSWORD,
-  shopifyApiVersion: process.env.SHOPIFY_API_VERSION,
+  shopifyAdminApiAccessToken: process.env.SHOPIFY_ACCESS_TOKEN,
+  shopifyApiVersion: process.env.SHOPIFY_API_VERSION || '2024-04',
 });

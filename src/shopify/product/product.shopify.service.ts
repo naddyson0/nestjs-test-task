@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ProductService } from '../../product/interfaces/product-service.interface';
 import { CreateProductDto } from '../../product/dto/create-product.dto';
 
@@ -12,17 +12,16 @@ export class ShopifyProductService implements ProductService {
   async createProduct(
     createProductDto: CreateProductDto,
   ): Promise<ProductEntity> {
-    const product = this.transformRequestData(createProductDto);
-    const res = await this.shopifyApiService.post<any>('products.json', {
-      product,
-    });
-
-    return res.data.product;
-  }
-
-  async getProduct(id: string): Promise<any> {
-    const res = await this.shopifyApiService.get<any>(`products/${id}.json`);
-    return res.data;
+    try {
+      const product = this.transformRequestData(createProductDto);
+      const res = await this.shopifyApiService.post<any>('products.json', {
+        product,
+      });
+      return res?.data?.product;
+    } catch (err) {
+      console.error(`Error creating Shopify product:`, err);
+      throw new InternalServerErrorException({ shopifyError: err.response.data });
+    }
   }
 
   transformRequestData(data: CreateProductDto): any {

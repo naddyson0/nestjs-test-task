@@ -1,13 +1,18 @@
 ## Installation
 
 ```bash
+$ nvm use 18.19.0
 $ yarn install
 ```
 
 ## Set up environment variables
 
-You can use default values set up in app.config.ts
-or f
+Next env variables are required:
+
+```bash
+SHOPIFY_STORE=
+SHOPIFY_ACCESS_TOKEN=
+```
 
 ## Running the app
 

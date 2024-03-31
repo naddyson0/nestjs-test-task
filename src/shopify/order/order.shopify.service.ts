@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { OrderService } from '../../order/interfaces/order-service.interface';
 
@@ -12,13 +16,26 @@ export class ShopifyOrderService implements OrderService {
   constructor(private readonly shopifyApiService: ShopifyApiService) {}
 
   async findOne(id: string): Promise<any> {
-    const res = await this.shopifyApiService.get<any>(`orders/${id}.json`);
-    return res.data.order;
+    try {
+      const res = await this.shopifyApiService.get<any>(`orders/${id}.json`);
+      return res?.data?.order;
+    } catch (err) {
+      if (err.response.status === 404) {
+        return null;
+      }
+      console.error(`Error fetching order ${id}:`, err);
+      throw new InternalServerErrorException({ shopifyError: err.response.data });
+    }
   }
 
   async findAll(): Promise<any[]> {
-    const res = await this.shopifyApiService.get<any>('orders.json');
-    return res.data.orders;
+    try {
+      const res = await this.shopifyApiService.get<any>('orders.json');
+      return res?.data?.orders;
+    } catch (err) {
+      console.error('Error fetching orders:', err);
+      throw new InternalServerErrorException({ shopifyError: err.response.data });
+    }
   }
 
   transformResponseData(order: any): OrderEntity {

@@ -17,14 +17,14 @@ export class ShopifyApiService {
     const shopifyApiVersion =
       this.configService.get<string>('shopifyApiVersion');
 
-    const shopifyApiPassword =
-      this.configService.get<string>('shopifyApiPassword');
+    const shopifyAdminApiAccessToken =
+      this.configService.get<string>('shopifyAdminApiAccessToken');
 
     this.baseUrl = `https://${shopifyStore}/admin/api/${shopifyApiVersion}`;
 
     this.headers = new AxiosHeaders();
     this.headers.set('Content-Type', 'application/json');
-    this.headers.set('X-Shopify-Access-Token', shopifyApiPassword);
+    this.headers.set('X-Shopify-Access-Token', shopifyAdminApiAccessToken);
   }
 
   async get<T>(
@@ -32,16 +32,10 @@ export class ShopifyApiService {
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T, any>> {
     return firstValueFrom(
-      this.httpService
-        .get<T>(`${this.baseUrl}/${restUrl}`, {
-          headers: this.headers,
-          ...config,
-        } as AxiosRequestConfig)
-        .pipe(
-          catchError((e) => {
-            throw new HttpException(e.response.data, e.response.status);
-          }),
-        ),
+      this.httpService.get<T>(`${this.baseUrl}/${restUrl}`, {
+        headers: this.headers,
+        ...config,
+      } as AxiosRequestConfig),
     );
   }
 
@@ -51,16 +45,10 @@ export class ShopifyApiService {
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T, any>> {
     return firstValueFrom(
-      this.httpService
-        .post<T>(`${this.baseUrl}/${restUrl}`, data, {
-          headers: this.headers,
-          ...config,
-        } as AxiosRequestConfig)
-        .pipe(
-          catchError((e) => {
-            throw new HttpException(e.response.data, e.response.status);
-          }),
-        ),
+      this.httpService.post<T>(`${this.baseUrl}/${restUrl}`, data, {
+        headers: this.headers,
+        ...config,
+      } as AxiosRequestConfig),
     );
   }
 }
